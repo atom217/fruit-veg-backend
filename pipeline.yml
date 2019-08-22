@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Deployment pipeline for AIS ais-service-backend-service Service
+Description: Deployment pipeline for AIS ais-service-peak-mohit Service
 Parameters:
   GithubRepoOwner:
     Type: String
@@ -12,15 +12,15 @@ Parameters:
     NoEcho: true
   Stage:
     Type: String
-  Domain:
-    Description: Domain to deploy the service to. A base path mapping will be added from this domain to the service's API gateway. Only required if the service uses http events.
-    Default: "api.peak.ai"
-    AllowedValues:
-      - api.peak.ai
-      - api.beta.peak.ai
-      - api.test.peak.ai
-      - api.dev.peak.ai
-    Type: String
+  #Domain:
+  #  Description: Domain to deploy the service to. A base path mapping will be added from this domain to the service's API gateway. Only required if the service uses http events.
+  #  Default: "api.peak.ai"
+  #  AllowedValues:
+   #   - api.peak.ai
+   #   - api.beta.peak.ai
+   #   - api.test.peak.ai
+   #   - api.dev.peak.ai
+   # Type: String
   ServerlessVersion:
     Type: String
   NPMAuthToken:
@@ -59,8 +59,7 @@ Resources:
     Type: AWS::CodePipeline::Pipeline
     Properties:
       DisableInboundStageTransitions:
-        -
-          StageName: Deploy
+        - StageName: Deploy
           Reason: 'Disable transition until ready to deploy.'
       RoleArn: !GetAtt PipelineRole.Arn
       Name: !Ref AWS::StackName
@@ -90,21 +89,21 @@ Resources:
               RunOrder: 1
         - Name: Deploy
           Actions:
-          - Name: NotificationMonitor
-            InputArtifacts: []
-            ActionTypeId:
-              Category: Invoke
-              Owner: AWS
-              Version: '1'
-              Provider: Lambda
-            OutputArtifacts: []
-            Configuration:
-              FunctionName:
-                Ref: NotificationMonitorFunction
-              UserParameters:
-                !Sub |
-                  {"pipeline": "${AWS::StackName}"}
-            RunOrder: 1
+          # - Name: NotificationMonitor
+          #   InputArtifacts: []
+          #   ActionTypeId:
+          #     Category: Invoke
+          #     Owner: AWS
+          #     Version: '1'
+          #     Provider: Lambda
+          #   OutputArtifacts: []
+          #   Configuration:
+          #     FunctionName:
+          #       Ref: NotificationMonitorFunction
+          #     UserParameters:
+          #       !Sub |
+          #         {"pipeline": "${AWS::StackName}"}
+          #   RunOrder: 1
           - Name: DeployBackend
             ActionTypeId:
                 Category: Build
@@ -177,8 +176,8 @@ Resources:
             Value: true
           - Name: STAGE
             Value: !Ref Stage
-          - Name: DOMAIN
-            Value: !Ref Domain
+          #- Name: DOMAIN
+          #  Value: !Ref Domain
           - Name: SERVERLESS_VERSION
             Value: !Ref ServerlessVersion
           - Name: NPM_AUTH_TOKEN
@@ -192,13 +191,10 @@ Resources:
           phases:
             install:
               commands:
-                - apt-get update -y
                 - echo "//registry.npmjs.org/:_authToken="$NPM_AUTH_TOKEN > .npmrc
                 - npm install -g serverless@$SERVERLESS_VERSION
                 - npm install -g yarn
                 - make install
-                - make tests-unit
-                - make graphql-deploy
             build:
               commands:
                 - make deploy stage=$STAGE
@@ -286,5 +282,12 @@ Resources:
                   - sqs:CreateQueue
                   - sqs:GetQueueAttributes
                   - sqs:DeleteQueue
-                  - sqs:SetQueueAttributes
+                  - sqs:SetQueueAttributes'
+                  - dynamodb:DescribeTable
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
                 Resource: "*"
