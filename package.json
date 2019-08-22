@@ -1,0 +1,45 @@
+{
+  "name": "backend-service",
+  "version": "0.0.1",
+  "description": "Peak AIS Service - backend-service",
+  "repository": "git@github.com:PeakBI/ais-service-backend-service.git",
+  "author": "pushpendra paliwal pushpendra.paliwal@peak.ai",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "build": "yarn run clean; docker-compose build",
+    "start": "yarn run clean; docker-compose up",
+    "clean": "docker rm --force $(docker ps -a -q --filter ancestor=ais-service-backend-service)",
+    "test": "jest",
+    "lint": "eslint src/ --fix"
+  },
+  "dependencies": {
+    "@peak-ai/ais-service-discovery": "^0.0.10-alpha",
+    "@peak-ai/jedlik": "^0.0.3-alpha-3",
+    "awilix": "^4.2.2",
+    "aws-sdk": "^2.438.0",
+    "global": "^4.3.2",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "glob": "^7.1.3",
+    
+    "serverless-offline": "^4.9.4",
+    
+    "eslint": "^5.5.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "jest": "^23.6.0",
+    "pre-commit": "^1.2.2",
+    "serverless-domain-manager": "^2.6.0",
+    "serverless-jetpack": "^0.3.0",
+    "serverless-pseudo-parameters": "^2.4.0"
+  },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

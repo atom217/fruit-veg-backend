@@ -1,0 +1,5 @@
+# - dataSource: List_Items
+#   type: Query
+#   field: listItems
+#   request: "backend-service-lambda-default-request-mapping-template.vtl"
+#   response: "backend-service-lambda-default-response-mapping-template.vtl"

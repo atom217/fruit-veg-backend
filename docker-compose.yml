@@ -1,0 +1,14 @@
+version: '3'
+services:
+  api:
+    container_name: ais-service-backend-service
+    build: .
+    volumes:
+      - .:/usr/src/app
+      - $HOME/.aws:/root/.aws
+    ports:
+      - 4444:4444
+    environment:
+      AWS_PROFILE: peak-test
+      AWS_REGION: eu-west-1
+      SERVICE_NAME: ais-service-backend-service
